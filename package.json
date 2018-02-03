@@ -1,7 +1,7 @@
 {
   "name": "cyptro",
   "version": "1.0.0",
-  "description": "Web app to store and display your passwords",
+  "description": "Web app to store and display sensitive data",
   "main": "index.html",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

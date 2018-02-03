@@ -5,10 +5,11 @@ Single page web app that can decrypt data and display it to the user. The encryp
 
 Try it out
 ----------
-- Browse to `https://rdragon.github.io/cyptro` (or follow the build steps)
+- Browse to [https://rdragon.github.io/cyptro](https://rdragon.github.io/cyptro) (or follow the build steps)
 - Press `Log in` without providing a password. This takes you to the static version of the app
 - Select the entry named `test` by clicking on it
 - Enter the password `a` and press `Decrypt`
+- Click on `pass` to copy a password to your clipboard
 
 Build steps
 -----------
