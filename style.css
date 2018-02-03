@@ -1,0 +1,30 @@
+* {
+  font-family: "Courier New", Courier, monospace;
+  margin: 0;
+  padding: 0;
+}
+body {
+  margin: 1em;
+}
+input, button {
+  box-sizing: border-box;
+  width: 10em;
+  padding: 0.1em;
+  margin: 0.2em 0;
+  display: block;
+}
+.hidden {
+  display: none;
+}
+div, form {
+  margin: 1em 0;
+}
+a {
+  color: black;
+}
+a.block, span {
+  display: block;
+}
+a.clicked {
+  text-decoration: none;
+}
