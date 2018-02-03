@@ -1,0 +1,27 @@
+{
+  "name": "cyptro",
+  "version": "1.0.0",
+  "description": "Web app to store and display your passwords",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Rik Steenkamp",
+  "license": "ISC",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/rdragon/cyptro.git"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "clipboard": "^1.7.1",
+    "jquery": "^3.3.1",
+    "node-forge": "^0.7.1",
+    "webpack": "^3.10.0",
+    "webpack-dev-server": "^2.11.1"
+  },
+  "dependencies": {}
+}
