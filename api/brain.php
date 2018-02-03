@@ -17,8 +17,8 @@ function requirePost($key) {
 }
 function appendLog($file, $text) {
   $text = date('Y-m-d H:i:s') . ' ' . $text . ' IP = ' . $_SERVER['REMOTE_ADDR'];
-  file_put_contents($file, $text . '. UA = ' . $_SERVER['HTTP_USER_AGENT'] . PHP_EOL,
-    FILE_APPEND | LOCK_EX);
+  $text .= isset($_SERVER['HTTP_USER_AGENT']) ? '. UA = ' . $_SERVER['HTTP_USER_AGENT'] : '';
+  file_put_contents($file, $text . PHP_EOL, FILE_APPEND | LOCK_EX);
 }
 function isValidEntry($entry) {
   return is_array($entry) && isset($entry['title'], $entry['encrypted']) && count($entry) === 2;
@@ -37,7 +37,7 @@ class Brain {
     $this->initialize();
     $action = requireGet('action');
     if ($action === 'updateEntries')
-      $this->runUpdate(requirePost('entries'));
+      $this->runUpdate(requirePost('entries'), requirePost('allIds'));
     else if ($action === 'checkAlarm')
       $this->runCheckAlarm();
     else if ($action === 'clearAlarm')
@@ -123,14 +123,13 @@ class Brain {
     if (requireGet('password') != $this->config->adminPassword)
       throw new Exception('Password is invalid.');
   }
-  private function runUpdate($str) {
+  private function runUpdate($str1, $str2) {
     $this->requireAdmin();
-    $entries = json_decode($str, true);
-    if (!is_array($entries))
-      $this->fail('Input is invalid.');
+    $entries = json_decode($str1, true);
+    $allIds = json_decode($str2, false);
+    if (!is_array($entries) || !is_array($allIds))
+      throw new Exception('Input is invalid.');
     $count = 0;
-    if (count($entries) === 0)
-      $this->fail('No entries found.');
     foreach ($entries as $id => $entry) {
       if (!isValidEntry($entry)) {
         $this->appendLog("Entry '$id' is invalid: " . json_encode($entry));
@@ -142,6 +141,16 @@ class Brain {
     if (0 < $count)
       $this->log("$count entries updated.");
     $this->response['count'] = $count;
+    $count = 0;
+    foreach (array_keys($this->state['entries']) as $id) {
+      if (in_array($id, $allIds))
+        continue;
+      $title = $this->state['entries'][$id];
+      unset($this->state['entries'][$id]);
+      $this->log("Entry '$title' with id '$id' has been deleted.");
+      $count++;
+    }
+    $this->response['deletedCount'] = $count;
   }
   private function runCheckAlarm() {
     $this->response['alarm'] = $this->state['alarm'];
