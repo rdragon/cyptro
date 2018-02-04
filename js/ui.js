@@ -108,6 +108,10 @@ function showAccounts(accounts) {
     for (const id in account) {
       if (!account.hasOwnProperty(id) || id === 'title')
         continue;
+      if (id === 'matrixDecomposition') {
+        inner.append(helper.escapeHtml(account[id]) + ' ');
+        continue;
+      }
       const a = $(document.createElement('a'));
       a.attr('href', '#');
       a.attr('data-clipboard-text', account[id]);
