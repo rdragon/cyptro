@@ -49,7 +49,7 @@ export default function(data, password, callback) {
     const output = decipher.finish() ? decipher.output.getBytes() : '';
     if (output.length === 0)
       throw new Error('Failed to decrypt data.');
-    const text = output.substr(1);
+    const text = forge.util.decodeUtf8(output.substr(1));
     switch (output[0]) {
       case 'i':
         callback('html', `<br>Decrypted image<br>---------------<br><img src="data:image/jpeg;base64,${text}" alt="image" /><br><br>`);
