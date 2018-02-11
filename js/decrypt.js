@@ -25,27 +25,24 @@ function checkHmac(encrypted, hmac, key) {
   if (bytes !== hmac) {
     ui.log('debug', 'actual: ' + forge.util.encode64(bytes));
     ui.log('debug', 'expected: ' + forge.util.encode64(hmac));
-    throw new Error('HMAC does not match.');
+    throw new Error('Computed HMAC is different than given HMAC.');
   }
 }
-export default function(data, password, callback) {
+export default function(data, salt, password, callback) {
   const bytes = forge.util.decode64(data);
-  const n = bytes.length - config.keySize - config.blockSize - config.hmacSize;
+  const n = bytes.length - config.blockSize - config.hmacSize;
   if (n <= 0)
     throw new Error('Failed to decrypt data. Length is too small.');
-  const salt = bytes.substr(0, config.keySize);
-  ui.log('debug', 'salt: ' + forge.util.encode64(salt));
   generateKey(salt, password, key => {
     ui.info('Key generated.');
     ui.log('debug', 'key: ' + forge.util.encode64(key));
-    const iv = bytes.substr(config.keySize, config.blockSize);
-    const encrypted = bytes.substr(config.keySize + config.blockSize, n);
+    const iv = bytes.substr(0, config.blockSize);
     const hmac = bytes.substr(-config.hmacSize);
     ui.log('debug', 'iv: ' + forge.util.encode64(iv));
-    checkHmac(encrypted, hmac, key);
+    checkHmac(bytes.substr(0, config.blockSize + n), hmac, key);
     const decipher = forge.cipher.createDecipher(config.decipher, key);
     decipher.start({ iv });
-    decipher.update(forge.util.createBuffer(encrypted));
+    decipher.update(forge.util.createBuffer(bytes.substr(config.blockSize, n)));
     const output = decipher.finish() ? decipher.output.getBytes() : '';
     if (output.length === 0)
       throw new Error('Failed to decrypt data.');

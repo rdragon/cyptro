@@ -4,6 +4,7 @@ import config from 'config';
 import decrypt from 'decrypt';
 const _token = Symbol('_token');
 const _encrypted = Symbol('_encrypted');
+const _salt = Symbol('_salt');
 function fetchStaticEntries(brain) {
   helper.download(ui, 'Loading entries...', config.staticDataUrl + '/' + config.entriesFile, 'json', entries => {
     ui.info('Entries loaded.')
@@ -23,15 +24,20 @@ function logIn(brain, password) {
     ui.info('Successfully logged in.');
   });
 }
-function handleEntryLoaded(brain, encrypted) {
+function handleEntryLoaded(brain, encrypted, id) {
   ui.info('Entry loaded.');
   brain[_encrypted] = encrypted;
+  brain[_salt] = getSalt(id);
   ui.showDecodeScreen();
+}
+function getSalt(id) {
+  return (id.match(/^[0-9]+_[0-9]$/) ? id.slice(-1) : id) + config.saltSuffix;
 }
 export default class {
   constructor() {
     this[_token] = null;
     this[_encrypted] = null;
+    this[_salt] = null;
   }
   initialize() {
     ui.addLogInAction(password => {
@@ -51,21 +57,21 @@ export default class {
     });
     ui.addLoadEntryAction(id => {
       if (this[_token] === null)
-        helper.download(ui, 'Loading entry...', `${config.staticDataUrl}/${id}${config.entrySuffix}`, 'text', encrypted => handleEntryLoaded(this, encrypted));
+        helper.download(ui, 'Loading entry...', `${config.staticDataUrl}/${id}${config.entrySuffix}`, 'text', encrypted => handleEntryLoaded(this, encrypted, id));
       else
         helper.download(ui, 'Loading entry...', `${config.apiUrl}?action=getEntry&token=${this[_token]}&id=${id}`, 'json', response => {
           if (response.status !== 'ok') {
             ui.info('Could not load entry: ' + response.message);
             return;
           }
-          handleEntryLoaded(this, response.encrypted);
+          handleEntryLoaded(this, response.encrypted, id);
         });
     });
     ui.addDecodeAction(password => {
       if (password.length === 0)
         ui.info('Password is empty.');
       else
-        decrypt(this[_encrypted], password, (...args) => ui.showOutput(...args));
+        decrypt(this[_encrypted], this[_salt], password, (...args) => ui.showOutput(...args));
     });
   }
 };
