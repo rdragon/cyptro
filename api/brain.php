@@ -23,6 +23,9 @@ function appendLog($file, $text) {
 function isValidEntry($entry) {
   return is_array($entry) && isset($entry['title'], $entry['encrypted']) && count($entry) === 2;
 }
+function getHash($str) {
+  return hash('sha256', $str);
+}
 class Brain {
   private $config = null;
   private $response = null;
@@ -120,7 +123,7 @@ class Brain {
       $this->state[$key] = '';
   }
   private function requireAdmin() {
-    if (requireGet('password') != $this->config->adminPassword)
+    if (getHash(requireGet('password')) !== $this->config->adminPassword)
       throw new Exception('Password is invalid.');
   }
   private function runUpdate($str1, $str2) {
@@ -171,15 +174,16 @@ class Brain {
     $this->response['entries'] = &$array;
   }
   private function runLogIn() {
-    $str = requireGet('password');
-    if ($str === $this->config->adminPassword) {
-      $this->handleSuccessfulLogin();
-      return;
-    }
+    $input = requireGet('password');
     if (time() - $this->state['lastFailTime'] < $this->config->secondsPerTry)
       throw new Exception('The system is locked.');
     $password = $this->config->loginPassword;
-    if (substr($str, 0, strlen($password)) === $password && $this->addLoginId(substr($str, strlen($password))))
+    $n = $this->config->loginPasswordLength;
+    if ($this->state['alarm']) {
+      $password = $this->config->fallbackPassword;
+      $n = $this->config->fallbackPasswordLength;
+    }
+    if (getHash(substr($input, 0, $n)) === $password && $this->addLoginId(substr($input, $n)))
     {
       $this->handleSuccessfulLogin();
       return;
