@@ -192,6 +192,8 @@ class Ui {
 const ui = new Ui();
 export default ui;
 $(() => {
+  if (window.history && window.history.replaceState)
+    window.history.replaceState({}, 'cyptro', '/');
   _el = {
     logOut: getEl(ids.logOut),
     back: getEl(ids.back),
