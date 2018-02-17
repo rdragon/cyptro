@@ -5,7 +5,7 @@ import * as helper from 'helper';
 function generateKey(salt, password, callback) {
   ui.info('Generating key...');
   // We support the synchronous version of pbkdf2 because of IE.
-  if (document.URL.includes('?')) {
+  if (ui.query !== null) {
     const key = forge.pkcs5.pbkdf2(password, salt, config.derivationCount, config.keySize);
     withKey(null, key, callback);
     return;

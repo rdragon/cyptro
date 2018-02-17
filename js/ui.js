@@ -28,6 +28,7 @@ let _el = null;
 let _screen = screens.logIn;
 let _loggedIn = false;
 let _actions = new Map();
+let _query = null;
 const _clipboards = [];
 function getEl(id) {
   const el = $('#' + id);
@@ -96,6 +97,12 @@ function runAuto() {
   _el.submit.click();
   auto1 = false;
 }
+function setQuery() {
+  const s = document.URL;
+  const i = s.indexOf('?');
+  if (i < 0) return;
+  _query = s.substr(i);
+}
 function showAccounts(accounts) {
   const supported = Clipboard.isSupported();
   const div = $(document.createElement('div'));
@@ -150,6 +157,7 @@ class Ui {
   addDecodeAction(action) { addAction(screens.decode, action); }
   showDecodeScreen() { _screen = screens.decode; draw(); runAuto(); }
   get wrap () { return wrap; }
+  get query () { return _query; }
   set loggedIn (value) { _loggedIn = value; }
   showEntries(entries) {
     const div = $(document.createElement('div'));
@@ -192,6 +200,7 @@ class Ui {
 const ui = new Ui();
 export default ui;
 $(() => {
+  setQuery();
   if (window.history && window.history.replaceState)
     window.history.replaceState({}, 'cyptro', '/');
   _el = {
