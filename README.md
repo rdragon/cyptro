@@ -15,12 +15,12 @@ Build steps
 -----------
 - Run `npm install`
 - Copy `js/config.sample.js` to `js/config.js`
-- Run `webpack-dev-server`
+- Run `node_modules/.bin/webpack-dev-server`
 - Browse to [http://localhost:8080](http://localhost:8080)
 
 This allows you to run the static version of the app. If you want to make use of the PHP API you'll need some environment that supports PHP.
 
-To update `bundle.js` run `webpack -p`.
+To update `bundle.js` run `node_modules/.bin/webpack -p`.
 
 The PHP API
 -----------

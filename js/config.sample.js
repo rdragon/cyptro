@@ -10,7 +10,7 @@ export default {
   entrySuffix: '.txt',
   loginButtonText: 'Log in',
   decodeButtonText: 'Decode',
-  staticDataUrl: '/cyptro/data',
-  apiUrl: '/cyptro/api/api.php',
+  staticDataUrl: '/data',
+  apiUrl: '/api/api.php',
   logLevel: 'error'
 };
