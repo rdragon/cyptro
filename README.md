@@ -13,6 +13,8 @@ Try it out
 
 Build steps
 -----------
+- Run `npm install webpack -g`
+- Run `npm install webpack-dev-server -g`
 - Run `npm install`
 - Copy `js/config.sample.js` to `js/config.js`
 - Run `webpack-dev-server`
